@@ -17,9 +17,9 @@ function App() {
         <Route path="/explore" component={ExplorePage} />
         <Route exact path="/:username" component={ProfilePage} />
         <Route exact path="/p/:postId" component={PostPage} />
-        <Route path="/account/edit" component={EditProfilePage} />
-        <Route path="/account/login" component={LoginPage} />
-        <Route path="/account/emailsignup" component={SignUpPage} />
+        <Route path="/accounts/edit" component={EditProfilePage} />
+        <Route path="/accounts/login" component={LoginPage} />
+        <Route path="/accounts/emailsignup" component={SignUpPage} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </Router>
