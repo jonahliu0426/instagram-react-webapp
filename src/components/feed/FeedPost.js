@@ -17,7 +17,7 @@ function FeedPost({ post }) {
       <article className={classes.article}>
         {/* Feed Post Header */}
         <div className={classes.postHeader}>
-          <UserCard />
+          <UserCard user={user} />
           <MoreIcon
             className={classes.MoreIcon}
           />
@@ -48,12 +48,28 @@ function FeedPost({ post }) {
               </Typography>
             </Link>
             {showCaption ? (
-              <Typography
-                variant="body2"
-                component="span"
-                dangerouslySetInnerHTML={{ __html: caption }}
-              />) : (
-              <div>
+              <>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  dangerouslySetInnerHTML={{ __html: caption }}
+                />
+                <Button
+                  className={classes.moreButton}
+                  onClick={() => setShowCaption(false)}
+                >
+                  less
+                </Button>
+              </>
+            ) : (
+              <div className={classes.captionWrapper}>
+                <HTMLEllipsis
+                  unsafeHTML={caption}
+                  className={classes.caption}
+                  maxLine="0"
+                  ellipsis="..."
+                  basedOn="letters"
+                />
                 <Button
                   className={classes.moreButton}
                   onClick={() => setShowCaption(true)}
