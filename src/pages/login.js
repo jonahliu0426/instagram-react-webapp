@@ -133,4 +133,3 @@ export const LoginWithFacebook = ({ color, iconColor, variant }) => {
 
 export default LoginPage;
 
-

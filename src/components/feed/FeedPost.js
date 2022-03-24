@@ -1,11 +1,10 @@
-import { Button, Divider, Hidden, Typography } from "@material-ui/core";
+import { Button, Divider, Hidden, TextField, Typography } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useFeedPostStyles } from "../../styles";
 import UserCard from "../shared/UserCard";
-import { MoreIcon, CommentIcon, ShareIcon } from "../../icons";
+import { MoreIcon, CommentIcon, ShareIcon, UnlikeIcon, LikeIcon, SaveIcon, RemoveIcon } from "../../icons";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
-import { CommentSharp } from "@material-ui/icons";
 
 function FeedPost({ post }) {
   const classes = useFeedPostStyles();
@@ -115,15 +114,72 @@ function FeedPost({ post }) {
 }
 
 const LikeButton = () => {
-  return <>Like Button</>
+  const classes = useFeedPostStyles();
+  const [liked, setLiked] = React.useState(false);
+  const Icon = liked ? UnlikeIcon : LikeIcon;
+  const className = liked ? classes.liked : classes.like;
+
+  const handleLike = () => {
+    setLiked(true)
+  }
+
+  const handleUnlike = () => {
+    setLiked(false);
+  }
+
+  const onClick = liked ? handleUnlike : handleLike;
+
+  return <Icon className={className} onClick={onClick} />
 }
 
 const SaveButton = () => {
-  return <>Save Button</>
+  const classes = useFeedPostStyles();
+  const [saved, setSaved] = React.useState(false);
+  const Icon = saved ? RemoveIcon : SaveIcon;
+
+  const handleSave = () => {
+    setSaved(true)
+  }
+
+  const handleRemove = () => {
+    setSaved(false);
+  }
+
+  const onClick = saved ? handleRemove : handleSave;
+
+  return <Icon className={classes.saveIcon} onClick={onClick} />
 }
 
 const Comment = () => {
-  return <>Comment</>
+  const classes = useFeedPostStyles();
+  const [content, setContent] = React.useState('');
+
+  return (
+    <div className={classes.commentContainer}>
+      <TextField
+        fullWidth
+        value={content}
+        placeholder="Add a comment"
+        multiline
+        rowsMax={2}
+        rows={1}
+        className={classes.textField}
+        onChange={event => setContent(event.target.value)}
+        InputProps={{
+          classes: {
+            root: classes.root,
+            underline: classes.underline
+          }
+        }}
+      />
+      <Button
+        color="primary"
+        className={classes.commentButton}
+        disabled={!content.trim()}
+      >
+        Post
+      </Button>
+    </div>)
 }
 
 export default FeedPost;

@@ -128,6 +128,16 @@ export const useLoginPageStyles = makeStyles({
     margin: 0,
     borderRadius: 0,
     height: "48px"
+  },
+  passwordContainer: {
+    display: "grid",
+    gridAutoFlow: "column",
+    gridTemplateColumns: "auto minmax(auto, 56px)",
+    padding: "0px 0px 0px 0px !important",
+  },
+  showHideButton: {
+    width: "48px !important",
+    padding: "unset"
   }
 });
 
