@@ -1,13 +1,32 @@
 import React from "react";
 import { useFeedPageStyles } from "../styles";
 import Layout from "../components/shared/Layout";
+import { getDefaultPost } from "../data";
+import { Hidden } from "@material-ui/core";
+import UserCard from "../components/shared/UserCard";
+import FeedPost from "../components/feed/FeedPost";
+import FeedSideSuggestions from "../components/feed/FeedSideSuggestions"
 
 function FeedPage() {
-  useFeedPageStyles();
+  const classes = useFeedPageStyles();
 
   return (
     <Layout>
-      FeedPage
+      <div className={classes.container}>
+        <div>
+          {Array.from({ length: 5 }, () => getDefaultPost()).map(post => (
+            <FeedPost key={post.id} post={post} />
+          ))}
+        </div>
+        <Hidden smDown>
+          <div className={classes.sidebarContainer}>
+            <div className={classes.sidebarWrapper}>
+              <UserCard />
+              <FeedSideSuggestions />
+            </div>
+          </div>
+        </Hidden>
+      </div>
     </Layout>
   )
 }
