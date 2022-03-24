@@ -98,7 +98,8 @@ export const useLoginPageStyles = makeStyles({
     marginBottom: 6
   },
   button: {
-    margin: "8px 0px"
+    margin: "8px 0px",
+    fontWeight: "bold"
   },
   typography: {
     margin: "10px 0px"
