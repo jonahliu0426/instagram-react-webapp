@@ -21,7 +21,10 @@ const LoginPage = () => {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleClickShowPassword = (event) => {
+    event.preventDefault()
+    setShowPassword(!showPassword)
+  }
 
   // const handleMouseDownPassword = () => setShowPassword(!showPassword)
 
@@ -52,15 +55,22 @@ const LoginPage = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        fullHeight
+                        className={classes.adornedEndButton}
                         onClick={handleClickShowPassword}
-                      // onMouseDown={handleMouseDownPassword}
+                        type="submit"
                       >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
+                        {showPassword ? "Hide" : "Show"}
+                      </Button>
+
                     </InputAdornment>
-                  )
+                  ),
+                  classes: {
+                    adornedEnd: classes.adornedEnd
+                  }
                 }}
               />
               <Button

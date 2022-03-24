@@ -21,7 +21,10 @@ function SignUpPage() {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleClickShowPassword = (event) => {
+    event.preventDefault();
+    setShowPassword(!showPassword)
+  }
 
   return (
     <>
@@ -74,13 +77,13 @@ function SignUpPage() {
                 margin="dense"
                 className={classes.textField}
                 autoComplete="current-password"
+                type={showPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={handleClickShowPassword}
-                      // onMouseDown={handleMouseDownPassword}
                       >
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>

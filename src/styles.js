@@ -120,6 +120,14 @@ export const useLoginPageStyles = makeStyles({
     height: 16,
     width: 16,
     marginRight: 8
+  },
+  adornedEnd: {
+    paddingRight: "0px"
+  },
+  adornedEndButton: {
+    margin: 0,
+    borderRadius: 0,
+    height: "48px"
   }
 });
 
