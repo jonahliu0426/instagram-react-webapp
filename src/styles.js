@@ -882,7 +882,12 @@ const border = "1px solid #e6e6e6";
 const marginBottom = "20px !important";
 export const useFollowSuggestionsStyles = makeStyles(theme => ({
   container: {
-    maxWidth: "100vw"
+    maxWidth: "100vw",
+  },
+  wrapper: {
+    border: "1px solid #e6e6e6",
+    backgroundColor: "#ffffff",
+    marginBottom: "32px",
   },
   slide: {
     padding: "10px 0px 20px 0px !important",
@@ -892,17 +897,21 @@ export const useFollowSuggestionsStyles = makeStyles(theme => ({
     "& .slick-slide > div": {
       background: "#ffffff",
       border,
-      margin: "0px 10px !important",
-      padding: "20px !important"
+      margin: "0px 20px !important",
+      padding: "20px 10px !important"
     },
     "& .slick-next:before, & .slick-prev:before": {
       color: "rgb(38, 38, 38)",
       fontSize: "24px !important"
     }
   },
+  typographySuggestion: {
+    borderBottom: "none !important",
+    padding: "12px 0px 0px 12px !important",
+  },
   typography: {
     borderBottom: "none !important",
-    padding: "0px 0px 0px 12px !important"
+    padding: "0px 0px 0px 12px !important",
   },
   skeleton: {
     display: "grid",
