@@ -502,6 +502,17 @@ export const useFollowButtonStyles = makeStyles({
     width: "75px !important",
     padding: "0px 16px !important",
     marginTop: ({ side }) => `${side ? "0px !important" : "10px !important"}`
+  },
+  followingButton: {
+    height: "30px !important",
+    width: "75px !important",
+    padding: "0px 16px !important",
+    marginTop: ({ side }) => `${side ? "0px !important" : "10px !important"}`,
+    '&:hover': {
+      backgroundColor: 'red',
+      color: 'white',
+      border: 0
+    },
   }
 });
 
