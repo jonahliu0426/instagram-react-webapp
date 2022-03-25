@@ -4,13 +4,16 @@ import { useFeedSideSuggestionsStyles } from "../../styles";
 import { getDefaultUser } from '../../data';
 import FollowButton from '../shared/FollowButton';
 import UserCard from "../shared/UserCard";
+import { LoadingIcon } from "../../icons";
 
 function FeedSideSuggestions() {
   const classes = useFeedSideSuggestionsStyles();
 
+  let loading = false;
+
   return (
     <article className={classes.article}>
-      <Paper>
+      <Paper className={classes.paper}>
         <Typography
           color="textSecondary"
           variant="subtitle2"
@@ -21,7 +24,7 @@ function FeedSideSuggestions() {
         >
           Suggestions
         </Typography>
-        {Array.from({ length: 5 }, () => getDefaultUser()).map(user => (
+        {loading ? <LoadingIcon /> : Array.from({ length: 5 }, () => getDefaultUser()).map(user => (
           <div key={user.id} className={classes.card}>
             <UserCard user={user} />
             <FollowButton side={true} />
