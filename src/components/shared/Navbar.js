@@ -1,10 +1,12 @@
-import { AppBar, Avatar, Fade, Grid, Hidden, InputBase, Typography } from "@material-ui/core";
+import { AppBar, Avatar, Fade, Grid, Hidden, InputBase, Typography, Zoom } from "@material-ui/core";
 import React from "react";
-import { useNavbarStyles, WhiteTooltip } from "../../styles";
+import { useNavbarStyles, WhiteTooltip, RedTooltip } from "../../styles";
 import { Link, useHistory } from 'react-router-dom';
 import logo from '../../images/logo.png'
 import { AddIcon, ExploreActiveIcon, ExploreIcon, HomeActiveIcon, HomeIcon, LikeActiveIcon, LikeIcon, LoadingIcon } from "../../icons";
 import { defaultCurrentUser, getDefaultUser } from "../../data";
+import NotificationTooltip from '../notification/NotificationTooltip';
+import NotificationList from "../notification/NotificationList";
 
 
 function Navbar({ minimalNavbar }) {
@@ -113,13 +115,30 @@ const Search = ({ history }) => {
 const Links = ({ path }) => {
   const classes = useNavbarStyles();
   const [showList, setShowList] = React.useState(false);
-  const handleToggleNotification = () => {
-    setShowList(!showList);
+  const [showTooltip, setShowTooltip] = React.useState(true);
+  const handleToggleList = () => {
+    setShowList(prev => !prev);
+  }
+
+  React.useEffect(() => {
+    const timeout = setTimeout(handleHideTooltip, 5000);
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, []);
+
+  const handleHideTooltip = () => {
+    setShowTooltip(false);
+  }
+
+  function handleHideList() {
+    setShowList(false);
   }
 
 
   return (
     <div className={classes.linksContainer}>
+      {showList && <NotificationList handleHideList={handleHideList} />}
       <div className={classes.linksWrapper}>
         <Hidden xsDown>
           <AddIcon />
@@ -130,9 +149,17 @@ const Links = ({ path }) => {
         <Link to="/explore">
           {path === '/explore' ? <ExploreActiveIcon /> : <ExploreIcon />}
         </Link>
-        <div className={classes.notifications} onClick={handleToggleNotification}>
-          {showList ? <LikeActiveIcon /> : <LikeIcon />}
-        </div>
+        <RedTooltip
+          arrow
+          open={showTooltip}
+          onOpen={handleHideTooltip}
+          TransitionComponent={Zoom}
+          title={<NotificationTooltip />}
+        >
+          <div className={classes.notifications} onClick={handleToggleList}>
+            {showList ? <LikeActiveIcon /> : <LikeIcon />}
+          </div>
+        </RedTooltip>
         <Link to={`/${defaultCurrentUser.username}`}>
           <div className={path === `/${defaultCurrentUser.username}` ?
             classes.profileActive : ""}>
