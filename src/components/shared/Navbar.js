@@ -1,10 +1,10 @@
-import { AppBar, Avatar, Hidden, InputBase } from "@material-ui/core";
+import { AppBar, Avatar, Fade, Grid, Hidden, InputBase, Typography } from "@material-ui/core";
 import React from "react";
-import { useNavbarStyles } from "../../styles";
+import { useNavbarStyles, WhiteTooltip } from "../../styles";
 import { Link, useHistory } from 'react-router-dom';
 import logo from '../../images/logo.png'
 import { AddIcon, ExploreActiveIcon, ExploreIcon, HomeActiveIcon, HomeIcon, LikeActiveIcon, LikeIcon, LoadingIcon } from "../../icons";
-import { defaultCurrentUser } from "../../data";
+import { defaultCurrentUser, getDefaultUser } from "../../data";
 
 
 function Navbar({ minimalNavbar }) {
@@ -18,7 +18,7 @@ function Navbar({ minimalNavbar }) {
         <Logo />
         {!minimalNavbar && (
           <>
-            <Search />
+            <Search history={history} />
             <Links path={path} />
           </>
         )}
@@ -41,34 +41,71 @@ const Logo = () => {
   )
 }
 
-const Search = () => {
+const Search = ({ history }) => {
   const classes = useNavbarStyles();
+  const [loading, setLoading] = React.useState(false);
+  const [results, setResults] = React.useState([])
   const [query, setQuery] = React.useState('');
 
-  let loading = false;
+  const hasResults = Boolean(query) && results.length > 0;
 
-  const handleClearInput = (event) => {
-    event.preventDefault();
+  React.useEffect(() => {
+    if (!query.trim()) return;
+    setResults(Array.from({ length: 5 }, () => getDefaultUser()))
+  }, [query])
+
+  const handleClearInput = () => {
     setQuery('');
   }
 
   return (
     <Hidden xsDown>
-      <InputBase
-        className={classes.input}
-        onChange={event => setQuery(event.target.value)}
-        startAdornment={<span className={classes.searchIcon} />}
-        endAdornment={
-          loading ? (
-            <LoadingIcon />
-          ) : (
-            <span onClick={handleClearInput} className={classes.clearIcon} />
+      <WhiteTooltip
+        arrow
+        interactive
+        TransitionComponent={Fade}
+        open={hasResults}
+        title={
+          hasResults && (
+            <Grid className={classes.resultContainer} container>
+              {results.map(result => (
+                <Grid key={result.id} item className={classes.resultLink}
+                  onClick={() => {
+                    history.push(`/${result.username}`);
+                    handleClearInput();
+                  }}
+                >
+                  <div className={classes.resultWrapper}>
+                    <div className={classes.avatarWrapper}>
+                      <Avatar src={result.profile_image} alt="user avatar" />
+                    </div>
+                    <div className={classes.nameWrapper}>
+                      <Typography variant="body1">{result.username}</Typography>
+                      <Typography variant="body2" color="textSecondary">{result.name}</Typography>
+                    </div>
+                  </div>
+                </Grid>
+              ))}
+            </Grid>
           )
         }
-        value={query}
-        placeholder="Search"
       >
-      </InputBase>
+        <InputBase
+          className={classes.input}
+          onChange={event => setQuery(event.target.value)}
+          startAdornment={<span className={classes.searchIcon} />}
+          endAdornment={
+            loading ? (
+              <LoadingIcon />
+            ) : (
+              <span onClick={handleClearInput} className={classes.clearIcon} />
+            )
+          }
+          value={query}
+          placeholder="Search"
+        >
+        </InputBase>
+      </WhiteTooltip>
     </Hidden>
   )
 }
