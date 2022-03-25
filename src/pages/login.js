@@ -5,10 +5,7 @@ import {
   TextField,
   Typography,
   InputAdornment,
-  IconButton,
 } from "@material-ui/core";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import React from "react";
 import { Link } from "react-router-dom";
 import SEO from "../components/shared/Seo";
