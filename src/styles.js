@@ -1733,8 +1733,8 @@ export const useMorePostsFromUserStyles = makeStyles(theme => ({
   },
   typography: {
     fontWeight: "bold !important",
-    marginBottom: `${theme.spacing(2)} !important`,
-    marginLeft: `${theme.spacing(1)} !important`
+    marginBottom: `${theme.spacing(2)}px !important`,
+    marginLeft: `${theme.spacing(1)}px !important`
   },
   container: {
     paddingTop: "6vh"
