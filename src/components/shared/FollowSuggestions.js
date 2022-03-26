@@ -14,7 +14,7 @@ function FollowSuggestions({ hideHeader, noBackground }) {
   let loading = false;
 
   return (
-    <div className={!noBackground && classes.wrapper}>
+    <div className={!noBackground ? classes.wrapper : undefined}>
       <div className={classes.container}>
         {!hideHeader && <Typography
           color="textSecondary"
