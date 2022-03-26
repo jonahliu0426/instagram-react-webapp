@@ -35,7 +35,7 @@ function FollowSuggestions() {
             variableWidth
             swipeToslide
             arrows
-            slidesToScroll={3}
+            slidesToScroll={2}
             easing="ease-in-out"
           >
             {Array.from({ length: 8 }, () => getDefaultUser()).map(user => (
