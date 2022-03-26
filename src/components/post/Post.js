@@ -6,11 +6,17 @@ import UserCard from "../shared/UserCard";
 import { MoreIcon, CommentIcon, ShareIcon, UnlikeIcon, LikeIcon, SaveIcon, RemoveIcon } from "../../icons";
 import OptionDialog from "../shared/OptionsDialog";
 import { defaultPost } from "../../data";
+import PostSkeleton from "./PostSkeleton";
 
 function Post() {
   const classes = usePostStyles();
+  const [loading, setLoading] = React.useState(true);
   const { id, media, likes, user, caption, comments } = defaultPost;
   const [showOptionDialog, setShowOptionDialog] = React.useState(false);
+
+  setTimeout(() => setLoading(false), 2000);
+
+  if (loading) return <PostSkeleton />;
 
   return (
     <div className={classes.postContainer}>

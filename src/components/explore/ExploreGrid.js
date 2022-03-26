@@ -5,10 +5,15 @@ import { LoadingLargeIcon } from "../../icons";
 import { useExploreGridStyles } from "../../styles";
 import GridPost from "../shared/GridPost"
 
+
 function ExploreGrid() {
   const classes = useExploreGridStyles();
+  const [loading, setLoading] = React.useState(true);
 
-  let loading = false;
+  React.useEffect(() => {
+    const timeOut = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timeOut);
+  }, [])
 
   return (
     <>

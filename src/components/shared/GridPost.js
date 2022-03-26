@@ -2,9 +2,11 @@ import { Typography } from "@material-ui/core";
 import React from "react";
 import { useGridPostStyles } from "../../styles";
 import { useHistory } from "react-router-dom";
+import GridPostSkeleton from "./GridPostSkeleton";
 
 function GridPost({ post }) {
   const history = useHistory();
+
   const classes = useGridPostStyles();
   const { media, comments, likes } = post
 
@@ -14,6 +16,7 @@ function GridPost({ post }) {
       state: { modal: true }
     })
   }
+
 
   return (
     <div onClick={handleOpenPostModal} className={classes.gridPostContainer}>
