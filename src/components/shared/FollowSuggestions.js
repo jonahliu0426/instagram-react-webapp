@@ -65,7 +65,7 @@ export const FollowSuggestionsItem = ({ user }) => {
             }}
           />
         </Link>
-        <Link>
+        <Link to={`/${username}`}>
           <Typography
             variant="subtitle2"
             className={classes.text}
@@ -73,7 +73,7 @@ export const FollowSuggestionsItem = ({ user }) => {
           >
             {username}
           </Typography>
-        </Link>
+        </Link >
         <Typography color="textSecondary" variant="body2" className={classes.text}
           align="center"
         >
