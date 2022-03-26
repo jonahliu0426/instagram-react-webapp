@@ -6,12 +6,14 @@ import UserCard from "../shared/UserCard";
 import { MoreIcon, CommentIcon, ShareIcon, UnlikeIcon, LikeIcon, SaveIcon, RemoveIcon } from "../../icons";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import FollowSuggestions from "../shared/FollowSuggestions";
+import OptionDialog from "../shared/OptionsDialog";
 
 function FeedPost({ post, index }) {
   const classes = useFeedPostStyles();
   const [showCaption, setShowCaption] = React.useState(false);
   const { id, media, likes, user, caption, comments } = post;
   const showFollowingSuggestions = index === 1;
+  const [showOptionDialog, setShowOptionDialog] = React.useState(false);
 
   return (
     <>
@@ -21,6 +23,7 @@ function FeedPost({ post, index }) {
           <UserCard user={user} />
           <MoreIcon
             className={classes.MoreIcon}
+            onClick={() => setShowOptionDialog(true)}
           />
         </div>
         {/* Feed Post Image */}
@@ -112,6 +115,7 @@ function FeedPost({ post, index }) {
         </Hidden>
       </article>
       {showFollowingSuggestions && <FollowSuggestions />}
+      {showOptionDialog && <OptionDialog onClose={() => setShowOptionDialog(false)} />}
     </>
   )
 }
