@@ -41,7 +41,7 @@ function FeedPost({ post, index }) {
             <SaveButton />
           </div>
           {/* Post Likes Count */}
-          <Typography className={classes.like} variant="subtitle2">
+          <Typography className={classes.likes} variant="subtitle2">
             <span>{likes === 1 ? "1 like" : `${likes} likes`}</span>
           </Typography>
           {/* Post Caption with Expand and Collapse option */}
