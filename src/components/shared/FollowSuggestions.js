@@ -1,6 +1,6 @@
 import { Avatar, Typography } from "@material-ui/core";
 import React from "react";
-import { LoadingIcon, LoadingLargeIcon } from "../../icons";
+import { LoadingLargeIcon } from "../../icons";
 import { useFollowSuggestionsStyles } from "../../styles";
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
