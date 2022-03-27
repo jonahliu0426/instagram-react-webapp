@@ -5,7 +5,6 @@ import { IconButton, Hidden, Drawer, List, ListItem, ListItemText, Typography, T
 import { Menu } from "@material-ui/icons";
 import { defaultCurrentUser } from "../data";
 import ProfilePicture from "../components/shared/ProfilePicture";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize"
 
 function EditProfilePage({ history }) {
   const classes = useEditProfilePageStyles();
