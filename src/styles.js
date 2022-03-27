@@ -1100,7 +1100,8 @@ export const useEditProfilePageStyles = makeStyles(theme => ({
     ...sectionItem,
     [theme.breakpoints.down("xs")]: {
       display: "unset"
-    }
+    },
+    alignItems: "center !important",
   },
   textFieldInput: {
     padding: "10px !important"
@@ -1120,6 +1121,10 @@ export const useEditProfilePageStyles = makeStyles(theme => ({
     "&:hover": {
       cursor: "pointer"
     }
+  },
+  bio: {
+    fontWeight: "bold",
+    paddingTop: "2px",
   }
 }));
 
