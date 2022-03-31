@@ -1,6 +1,7 @@
 import { makeStyles, withStyles, Tooltip } from "@material-ui/core";
 import IconSheet from "./images/icon-sheet.png";
 import IconSheet2 from "./images/icon-sheet-2.png";
+import NFTIconSheet from "./images/nft-tag-icon.png";
 
 /* Feed page: /pages/feed.js */
 export const useFeedPageStyles = makeStyles(theme => ({
@@ -1503,6 +1504,12 @@ const commonIconProps = {
   height: 12
 };
 
+const NFTIconProps = {
+  backgroundImage: `url(${NFTIconSheet})`,
+  backgroundRepeat: "no-repeat",
+  height: 12
+}
+
 export const useProfileTabsStyles = makeStyles(theme => {
   const postsIconSmallGrey = {
     ...commonIconProps,
@@ -1552,6 +1559,20 @@ export const useProfileTabsStyles = makeStyles(theme => {
       backgroundSize: "410px 396px",
       width: 12
     },
+    NFTIconLarge: {
+      ...NFTIconProps,
+      backgroundPosition: "-6px -6px",
+      backgroundSize: "37px",
+      width: 13,
+      height: 13
+    },
+    NFTIconSmall: {
+      ...NFTIconProps,
+      backgroundPosition: "-5px -13px",
+      backgroundSize: "79px",
+      width: 48,
+      height: 25,
+    },
     savedIconLarge: {
       ...commonIconProps,
       backgroundSize: "410px 396px",
@@ -1580,6 +1601,13 @@ export const useProfileTabsStyles = makeStyles(theme => {
       "& *": {
         marginBottom: 16
       }
+    },
+    nftCollectionIcon: {
+      ...NFTIconProps,
+      backgroundPosition: "center",
+      backgroundSize: "62px",
+      height: 62,
+      width: 62
     },
     savePhotoIcon: {
       ...commonIconProps,
