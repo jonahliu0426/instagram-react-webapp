@@ -10,12 +10,18 @@ import SignUpPage from "./pages/signup";
 import NotFoundPage from "./pages/not-found";
 import { useHistory, useLocation } from "react-router-dom";
 import PostModal from "./components/post/PostModal";
+import { AuthContext } from "./auth";
+import createApolloClient from "./graphql/client";
+
 
 function App() {
+  const { authState } = React.useContext(AuthContext);
   const history = useHistory();
   const location = useLocation();
   const prevLocation = React.useRef(location);
   const modal = location.state?.modal;
+
+  console.log('auth', authState)
 
   React.useEffect(() => {
     if (!history.action !== 'POP' && !modal) {
