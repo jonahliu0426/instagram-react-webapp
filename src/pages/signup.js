@@ -13,10 +13,31 @@ import { useSignUpPageStyles } from "../styles";
 import { LoginWithFacebook } from "./login";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { AuthContext } from "../auth";
+import { useHistory } from "react-router-dom";
 
 
 function SignUpPage() {
   const classes = useSignUpPageStyles();
+  const { signUpWithEmailAndPassword } = React.useContext(AuthContext);
+  const [values, setValues] = React.useState({
+    email: '',
+    name: '',
+    username: '',
+    password: '',
+  })
+  const history = useHistory();
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setValues(prev => ({ ...prev, [name]: value }));
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await signUpWithEmailAndPassword(values);
+    history.push('/');
+  }
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -45,17 +66,21 @@ function SignUpPage() {
               </div>
               <div className={classes.orLine} />
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <TextField
                 fullWidth
+                onChange={handleChange}
+                name="email"
                 variant="filled"
                 label="Mobile Number or Email"
                 margin="dense"
                 className={classes.textField}
-                autoComplete="username"
+                autoComplete="email"
               />
               <TextField
                 fullWidth
+                name="name"
+                onChange={handleChange}
                 variant="filled"
                 label="Full Name"
                 margin="dense"
@@ -63,6 +88,8 @@ function SignUpPage() {
               />
               <TextField
                 fullWidth
+                name="username"
+                onChange={handleChange}
                 variant="filled"
                 label="username"
                 margin="dense"
@@ -71,6 +98,8 @@ function SignUpPage() {
               />
               <TextField
                 fullWidth
+                name="password"
+                onChange={handleChange}
                 variant="filled"
                 label="password"
                 margin="dense"
@@ -97,7 +126,7 @@ function SignUpPage() {
                 className={classes.button}
                 type="submit"
               >
-                Log In
+                Sign Up
               </Button>
             </form>
             <div className={classes.orContainer}>
