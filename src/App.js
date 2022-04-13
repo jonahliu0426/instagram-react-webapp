@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom"
+import { Switch, Route, Redirect, useHistory, useLocation } from "react-router-dom"
 import FeedPage from "./pages/feed"
 import ExplorePage from "./pages/explore"
 import ProfilePage from "./pages/profile"
@@ -8,14 +8,22 @@ import EditProfilePage from "./pages/edit-profile";
 import LoginPage from "./pages/login";
 import SignUpPage from "./pages/signup";
 import NotFoundPage from "./pages/not-found";
-import { useHistory, useLocation } from "react-router-dom";
 import PostModal from "./components/post/PostModal";
 import { AuthContext } from "./auth";
 import createApolloClient from "./graphql/client";
+import { useSubscription } from "@apollo/client";
+import { ME } from "./graphql/subscriptions";
+import LoadingScreen from "./components/shared/LoadingScreen";
+
+export const UserContext = React.createContext();
 
 
 function App() {
   const { authState } = React.useContext(AuthContext);
+  const isAuth = authState.status === "in";
+  const userId = isAuth ? authState.user.uid : null;
+  const variables = { userId };
+  const { data, loading } = useSubscription(ME, { variables });
   const history = useHistory();
   const location = useLocation();
   const prevLocation = React.useRef(location);
@@ -29,11 +37,24 @@ function App() {
     }
   }, [location, modal, history.action]);
 
-  const isModalOpen = modal && prevLocation.current !== location;
+  if (loading) return <LoadingScreen />
 
+  if (!isAuth) {
+    return (
+      <Switch>
+        <Route path="/accounts/login" component={LoginPage} />
+        <Route path="/accounts/emailsignup" component={SignUpPage} />
+        <Redirect to="/accounts/login" />
+      </Switch>
+    );
+  }
+
+  const isModalOpen = modal && prevLocation.current !== location;
+  const me = isAuth && data ? data.users[0] : null;
+  const currentUserId = me.id;
 
   return (
-    <>
+    <UserContext.Provider value={{ me, currentUserId }}>
       <Switch location={isModalOpen ? prevLocation.current : location}>
         <Route exact path="/" component={FeedPage} />
         <Route path="/explore" component={ExplorePage} />
@@ -45,7 +66,7 @@ function App() {
         <Route path="*" component={NotFoundPage} />
       </Switch>
       {isModalOpen && <Route exact path="/p/:postId" component={PostModal} />}
-    </>
+    </UserContext.Provider>
   )
 }
 
