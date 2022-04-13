@@ -31,6 +31,7 @@ function App() {
 
   const isModalOpen = modal && prevLocation.current !== location;
 
+
   return (
     <>
       <Switch location={isModalOpen ? prevLocation.current : location}>
