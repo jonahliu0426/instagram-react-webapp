@@ -107,6 +107,10 @@ function AuthProvider({ children }) {
         }
     };
 
+    const updateEmail = async (email) => {
+        await authState.user.updateEmail(email);
+    }
+
     if (authState.status === "loading") {
         return null;
     } else {
@@ -117,7 +121,8 @@ function AuthProvider({ children }) {
                     logInWithGoogle,
                     signOut,
                     signUpWithEmailAndPassword,
-                    logInWithEmailAndPassword
+                    logInWithEmailAndPassword,
+                    updateEmail
                 }}
             >
                 {children}

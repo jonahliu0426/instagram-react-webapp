@@ -6,5 +6,12 @@ export const CREATE_USER = gql`
     affected_rows
   }
 }
+`
 
+export const EDIT_USER = gql`
+mutation editUser($id: uuid!, $name: String!, $username:String!, $website: String!, $bio: String!, $phoneNumber: String!, $email: String!) {
+  update_users(where: {id: {_eq: $id}}, _set: {name: $name, username: $username, website: $website, bio: $bio, email: $email, phone_number: $phoneNumber}) {
+    affected_rows
+  }
+}
 `

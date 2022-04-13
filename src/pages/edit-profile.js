@@ -1,12 +1,24 @@
 import React from "react";
 import { useEditProfilePageStyles } from "../styles";
 import Layout from "../components/shared/Layout";
-import { IconButton, Hidden, Drawer, List, ListItem, ListItemText, Typography, TextField, Button } from "@material-ui/core";
+import { IconButton, Hidden, Drawer, List, ListItem, ListItemText, Typography, TextField, Button, Snackbar, Slide } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
-import { defaultCurrentUser } from "../data";
 import ProfilePicture from "../components/shared/ProfilePicture";
+import { UserContext } from "../App";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_EDIT_USER_PROFILE } from "../graphql/queries";
+import LoadingScreen from "../components/shared/LoadingScreen";
+import { useForm } from 'react-hook-form';
+import isURL from "validator/lib/isURL";
+import isEmail from "validator/lib/isEmail";
+import isMobilePhone from "validator/lib/isMobilePhone";
+import { EDIT_USER } from "../graphql/mutations";
+import { AuthContext } from "../auth";
 
 function EditProfilePage({ history }) {
+  const { currentUserId } = React.useContext(UserContext);
+  const variables = { id: currentUserId }
+  const { data, loading } = useQuery(GET_EDIT_USER_PROFILE, { variables });
   const classes = useEditProfilePageStyles();
   const [showDrawer, setDrawer] = React.useState(false);
   const path = history.location.pathname;
@@ -67,6 +79,7 @@ function EditProfilePage({ history }) {
     </List>
   )
 
+  if (loading) return <LoadingScreen />
   return (
     <Layout title="Edit Profile">
       <section className={classes.section}>
@@ -107,7 +120,7 @@ function EditProfilePage({ history }) {
           </Hidden>
         </nav>
         <main>
-          {path.includes('edit') && <EditUserInfo user={defaultCurrentUser} />}
+          {path.includes('edit') && <EditUserInfo user={data.users_by_pk} />}
         </main>
 
 
@@ -116,13 +129,47 @@ function EditProfilePage({ history }) {
   )
 }
 
+const DEFAULT_ERROR = { type: "", message: "" }
+
+
 const EditUserInfo = ({ user }) => {
+  const { updateEmail } = React.useContext(AuthContext);
+  const { register, handleSubmit } = useForm({ mode: 'onBlur' });
   const classes = useEditProfilePageStyles();
+  const [editUser] = useMutation(EDIT_USER);
+  const [error, setError] = React.useState(DEFAULT_ERROR);
+  const [open, setOpen] = React.useState(false);
+  console.log(user);
+
+  function handleError(error) {
+    console.log(error);
+    if (error.message.includes("users_username_key")) {
+      setError({
+        type: "username",
+        message: "This username is already taken.",
+      });
+    } else if (error.code.includes("auth")) {
+      setError({ type: "email", message: error.message });
+    }
+  }
+
+  async function onSubmit(data) {
+    try {
+      setError(DEFAULT_ERROR);
+      const variables = { ...data, id: user.id };
+      await updateEmail(data.email);
+      await editUser({ variables });
+      setOpen(true);
+    } catch (error) {
+      console.error("Error updating profile", error);
+      handleError(error);
+    }
+  }
 
   return (
     <section className={classes.container}>
       <div className={classes.pictureSectionItem}>
-        <ProfilePicture size={38} user={user} />
+        <ProfilePicture size={38} image={user.profile_image} />
         <div className={classes.justifySelfStart}>
           <Typography className={classes.typography}>
             {user.username}
@@ -136,21 +183,52 @@ const EditUserInfo = ({ user }) => {
           </Typography>
         </div>
       </div>
-      <form className={classes.form}>
-        <SectionItem text="Name" formItem={user.name} />
-        <SectionItem text="Username" formItem={user.username} />
-        <SectionItem text="Website" formItem={user.website} />
+      <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+        <SectionItem name="name" inputRef={{
+          ...register("name", {
+            required: true,
+            minLength: 5,
+            maxLength: 20,
+          })
+        }} text="Name" formItem={user.name} />
+        <SectionItem
+          name="username"
+          error={error}
+          inputRef={{
+            ...register("username", {
+              required: true,
+              pattern: /^[a-zA-Z0-9_.]*$/,
+              minLength: 5,
+              maxLength: 20,
+            })
+          }} text="Username" formItem={user.username} />
+        <SectionItem name="website" inputRef={{
+          ...register("website", {
+            validate: (input) =>
+              Boolean(input)
+                ? isURL(input, {
+                  protocols: ["http", "https"],
+                  require_protocol: true,
+                })
+                : true,
+          })
+        }} text="Website" formItem={user.website} />
         <div className={classes.sectionItem} >
           <aside>
             <Typography className={classes.bio}>Bio</Typography>
           </aside>
           <TextField
+            name="bio" {
+            ...register("bio", {
+              maxLength: 120,
+            })
+            }
             variant="outlined"
             multiline
             fullWidth
             rowsMax={3}
             rows={3}
-            value={user.bio}
+            defaultValue={user.bio}
           />
         </div>
         <div className={classes.sectionItem}>
@@ -159,8 +237,20 @@ const EditUserInfo = ({ user }) => {
             Personal Information
           </Typography>
         </div>
-        <SectionItem text="Email" formItem={user.email} />
-        <SectionItem text="Phone Number" formItem={user.phone_number} />
+        <SectionItem
+          name="email"
+          error={error}
+          inputRef={{
+            ...register("email", {
+              required: true,
+              validate: (input) => isEmail(input)
+            })
+          }} text="Email" formItem={user.email} />
+        <SectionItem name="phoneNumber" inputRef={{
+          ...register("phoneNumber", {
+            validate: input => Boolean(input) ? isMobilePhone(input) : true,
+          })
+        }} text="Phone Number" formItem={user.phone_number} />
         <div className={classes.sectionItem}>
           <div />
           <Button
@@ -173,11 +263,18 @@ const EditUserInfo = ({ user }) => {
           </Button>
         </div>
       </form>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        TransitionComponent={Slide}
+        message={<span>Profile updated</span>}
+        onClose={() => setOpen(false)}
+      />
     </section>
   )
 }
 
-const SectionItem = ({ type = "text", text, formItem }) => {
+const SectionItem = ({ type = "text", text, formItem, inputRef, name, error }) => {
   const classes = useEditProfilePageStyles();
 
   return (
@@ -195,9 +292,12 @@ const SectionItem = ({ type = "text", text, formItem }) => {
         </Hidden>
       </aside>
       <TextField
+        name={name}
         variant="outlined"
+        helperText={error?.type === name && error.message}
+        {...inputRef}
         fullWidth
-        value={formItem}
+        defaultValue={formItem}
         type={type}
         className={classes.textField}
         inputProps={{
