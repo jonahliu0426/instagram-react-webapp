@@ -8,7 +8,7 @@ import { defaultCurrentUser, getDefaultUser } from "../../data";
 import NotificationTooltip from '../notification/NotificationTooltip';
 import NotificationList from "../notification/NotificationList";
 import { useNProgress } from "@tanem/react-nprogress";
-
+import { AuthContext } from "../../auth";
 
 function Navbar({ minimalNavbar }) {
   const classes = useNavbarStyles();
@@ -125,6 +125,8 @@ const Links = ({ path }) => {
   const classes = useNavbarStyles();
   const [showList, setShowList] = React.useState(false);
   const [showTooltip, setShowTooltip] = React.useState(true);
+  const { authState } = React.useContext(AuthContext);
+
   const handleToggleList = () => {
     setShowList(prev => !prev);
   }
@@ -174,7 +176,7 @@ const Links = ({ path }) => {
             classes.profileActive : ""}>
           </div>
           <Avatar
-            src={defaultCurrentUser.profile_image}
+            src={authState.user.photoURL}
             className={classes.profileImage}
           />
         </Link>
