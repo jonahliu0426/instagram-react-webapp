@@ -1,6 +1,6 @@
 import { userInfo } from "os";
 
-const handleImageUpload = async ({ user, media, setProfileImage, editUserAvatar }) => {
+const handleImageUpload = async ({ user, media, stateFunction, gqlFunction, actionType, postData }) => {
     let myHeaders = new Headers();
     let filename = media['name'];
     console.log(filename)
@@ -20,14 +20,20 @@ const handleImageUpload = async ({ user, media, setProfileImage, editUserAvatar 
             };
 
             fetch(`https://urmkm2ivv6.execute-api.us-east-1.amazonaws.com/dev/upload/instagram-web-app-storage/${filename}`, requestOptions)
-                .then(response => {
+                .then(async response => {
                     console.log(response);
                     const url = `https://instagram-web-app-storage.s3.amazonaws.com/${filename}`;
-                    const variables = { id: user.id, profileLink: url };
-                    editUserAvatar({ variables });
-                    setProfileImage(url);
+
+                    if (actionType === 'UPLOAD_AVATAR') {
+                        const variables = { id: user.id, profileLink: url };
+                        gqlFunction({ variables });
+                        stateFunction(url);
+                    } else if (actionType === 'SHARE_POST') {
+                        const variables = { ...postData, media: url };
+                        await gqlFunction({ variables });
+                        window.location.reload();
+                    }
                 })
-                // .then(data => console.log(data))
                 .catch(error => console.error(error));
 
         } catch (error) {

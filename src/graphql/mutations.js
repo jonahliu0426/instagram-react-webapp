@@ -23,3 +23,10 @@ mutation editProfilePic($id: uuid!, $profileLink: String!) {
   }
 }
 `
+
+export const CREATE_POST = gql`
+mutation createPost($userId: uuid!, $media: String!, $location: String!, $caption: String!) {
+  insert_posts(objects: {caption: $caption, location: $location, media: $media, user_id: $userId}) {
+    affected_rows
+  }
+}`

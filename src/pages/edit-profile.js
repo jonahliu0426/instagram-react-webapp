@@ -172,7 +172,13 @@ const EditUserInfo = ({ user }) => {
   }
 
   const handleUpdateProfilePic = async (event) => {
-    await handleImageUpload({ user, media: event.target.files[0], setProfileImage, editUserAvatar });
+    await handleImageUpload({
+      user,
+      media: event.target.files[0],
+      stateFunction: setProfileImage,
+      gqlFunction: editUserAvatar,
+      actionType: 'UPLOAD_AVATAR'
+    });
   }
 
   const openFileInput = () => {
