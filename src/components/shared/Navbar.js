@@ -9,6 +9,9 @@ import NotificationTooltip from '../notification/NotificationTooltip';
 import NotificationList from "../notification/NotificationList";
 import { useNProgress } from "@tanem/react-nprogress";
 import { AuthContext } from "../../auth";
+import { SEARCH_USERS } from "../../graphql/queries";
+import { useLazyQuery } from "@apollo/client";
+
 
 function Navbar({ minimalNavbar }) {
   const classes = useNavbarStyles();
@@ -54,16 +57,24 @@ const Logo = () => {
 
 const Search = ({ history }) => {
   const classes = useNavbarStyles();
-  const [loading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [results, setResults] = React.useState([])
   const [query, setQuery] = React.useState('');
+  const [searchUsers, { data }] = useLazyQuery(SEARCH_USERS)
 
   const hasResults = Boolean(query) && results.length > 0;
 
   React.useEffect(() => {
     if (!query.trim()) return;
-    setResults(Array.from({ length: 5 }, () => getDefaultUser()))
-  }, [query])
+    setLoading(true);
+    const variables = { query: `%${query}%` };
+    searchUsers({ variables });
+    if (data) {
+      setResults(data.users);
+      setLoading(false);
+    }
+    // setResults(Array.from({ length: 5 }, () => getDefaultUser()));
+  }, [query, data, searchUsers]);
 
   const handleClearInput = () => {
     setQuery('');
