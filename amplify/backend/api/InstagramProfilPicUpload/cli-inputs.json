@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/upload/{bucket}/{item}": {
+      "name": "/upload/{bucket}/{item}",
+      "lambdaFunction": "instagramreactwebapp9015e177",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

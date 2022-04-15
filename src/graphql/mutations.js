@@ -15,3 +15,11 @@ mutation editUser($id: uuid!, $name: String!, $username:String!, $website: Strin
   }
 }
 `
+
+export const EDIT_USER_AVATAR = gql`
+mutation editProfilePic($id: uuid!, $profileLink: String!) {
+  update_users(where: {id: {_eq: $id}}, _set: {profile_image: $profileLink}) {
+    affected_rows
+  }
+}
+`
