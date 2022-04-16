@@ -9,6 +9,20 @@ subscription me($userId: String) {
     username
     profile_image
     last_checked
+    notifications(order_by: {created_at: desc}){
+      id
+      type
+      created_at
+      post {
+        id
+        media
+      }
+      user {
+        id
+        username
+        profile_image
+      }
+    }
   }
 }
 `
@@ -40,7 +54,7 @@ subscription getPost($postId: uuid!) {
       id
       user_id
     }
-    comments(order_by: {created_at: desc, user: {username: asc}}) {
+    comments(order_by: {created_at: asc, user: {username: asc}}) {
       id
       created_at
       content
