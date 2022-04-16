@@ -5,10 +5,10 @@ import Post from "../components/post/Post";
 import MorePostsFromUser from "../components/post/MorePostsFromUser";
 
 function PostPage() {
-  const postId = useParams();
+  const { postId } = useParams();
   return (
     <Layout>
-      <Post id={postId} />
+      <Post postId={postId} />
       <MorePostsFromUser />
     </Layout>
   )
