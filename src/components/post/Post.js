@@ -11,6 +11,7 @@ import { useMutation, useSubscription } from "@apollo/client";
 import { GET_POST } from "../../graphql/subscriptions";
 import { UserContext } from "../../App";
 import { CREATE_COMMENT, LIKE_POST, SAVE_POST, UNLIKE_POST, UNSAVE_POST } from "../../graphql/mutations";
+import { formatDateToNowShort, formatPostDate } from "../../utils/formatDate";
 
 function Post({ postId }) {
   const classes = usePostStyles();
@@ -71,7 +72,7 @@ function Post({ postId }) {
           {/* Post Comment Area */}
 
           <Typography color="textSecondary" className={classes.datePosted}>
-            5 DAYS AGO
+            {formatPostDate(created_at)}
           </Typography>
           <Hidden xsDown>
             <div className={classes.comment}>
@@ -99,7 +100,7 @@ const LikeButton = ({ likes, postId, authorId }) => {
   const variables = {
     postId,
     userId: currentUserId,
-    // profileId: authorId,
+    profileId: authorId,
   }
 
   const handleLike = () => {
@@ -217,7 +218,7 @@ function AuthorCaption({ user, caption, createdAt }) {
           color="textSecondary"
           variant="caption"
         >
-          {createdAt}
+          {formatDateToNowShort(createdAt)}
         </Typography>
       </div>
     </div>
@@ -248,7 +249,7 @@ function UserComment({ comment }) {
           color="textSecondary"
           variant="caption"
         >
-          {comment.created_at}
+          {formatDateToNowShort(comment.created_at)}
         </Typography>
       </div>
     </div>
