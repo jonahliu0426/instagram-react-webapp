@@ -1,19 +1,31 @@
 import React from "react";
 import Layout from "../components/shared/Layout";
 import { useProfilePageStyles } from "../styles";
-import { defaultCurrentUser } from "../data";
+// import { defaultCurrentUser } from "../data";
 import { Card, CardContent, Hidden, Button, Typography, Dialog, Zoom, Divider, DialogTitle, Avatar } from "@material-ui/core";
 import ProfilePicture from "../components/shared/ProfilePicture"
 import { GearIcon } from "../icons";
 import FollowButton from "../components/shared/FollowButton";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProfileTabs from "../components/profile/ProfileTabs";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_USER_PROFILE } from "../graphql/queries";
+import LoadingScreen from "../components/shared/LoadingScreen";
+import { UserContext } from "../App";
+import { FOLLOW_USER, UNFOLLOW_USER } from "../graphql/mutations";
 
 
 function ProfilePage() {
-  const isOwner = true;
+  const { username } = useParams();
+  const { currentUserId } = React.useContext(UserContext);
   const classes = useProfilePageStyles();
   const [showOptionMenu, setShowOptionMenu] = React.useState(false);
+  const variables = { username };
+  const { data, loading } = useQuery(GET_USER_PROFILE, { variables });
+
+  if (loading) return <LoadingScreen />
+  const [user] = data.users
+  const isOwner = user.id === currentUserId;
 
   const handleOptionsMenuClick = () => {
     setShowOptionMenu(true);
@@ -24,19 +36,19 @@ function ProfilePage() {
   }
 
   return (
-    <Layout title={`${defaultCurrentUser.name} @${defaultCurrentUser.username}`}>
+    <Layout title={`${user.name} @${user.username}`}>
       <div className={classes.container}>
         <Hidden xsDown>
           <Card className={classes.cardLarge}>
-            <ProfilePicture isOwner={isOwner} />
+            <ProfilePicture user={user} isOwner={isOwner} image={user.profile_image} />
             <CardContent className={classes.cardContentLarge}>
               <ProfileNameSection
-                user={defaultCurrentUser}
+                user={user}
                 isOwner={isOwner}
                 handleOptionsMenuClick={handleOptionsMenuClick}
               />
-              <PostCountSection user={defaultCurrentUser} />
-              <NameBioSection user={defaultCurrentUser} />
+              <PostCountSection user={user} />
+              <NameBioSection user={user} />
             </CardContent>
           </Card>
         </Hidden>
@@ -44,20 +56,20 @@ function ProfilePage() {
           <Card className={classes.cardSmall}>
             <CardContent>
               <section className={classes.sectionSmall}>
-                <ProfilePicture size={77} isOwner={isOwner} />
+                <ProfilePicture user={user} size={77} isOwner={isOwner} image={user.profile_image} />
                 <ProfileNameSection
-                  user={defaultCurrentUser}
+                  user={user}
                   isOwner={isOwner}
                   handleOptionsMenuClick={handleOptionsMenuClick}
                 />
               </section>
-              <NameBioSection user={defaultCurrentUser} />
+              <NameBioSection user={user} />
             </CardContent>
-            <PostCountSection user={defaultCurrentUser} />
+            <PostCountSection user={user} />
           </Card>
         </Hidden>
         {showOptionMenu && <OptionsMenu handleCloseMenu={handleCloseMenu} />}
-        <ProfileTabs user={defaultCurrentUser} isOwner={isOwner} />
+        <ProfileTabs user={user} isOwner={isOwner} />
       </div>
     </Layout>
   )
@@ -67,10 +79,29 @@ function ProfilePage() {
 const ProfileNameSection = ({ user, isOwner, handleOptionsMenuClick }) => {
   const classes = useProfilePageStyles();
   const [showUnfollowDialog, setShowUnfollowDialog] = React.useState(false);
+  const { currentUserId, followingIds, followerIds } = React.useContext(UserContext);
+  const isAlreadyFollowing = followingIds.some(id => id === user.id)
+  const [isFollowing, setIsFollowing] = React.useState(isAlreadyFollowing);
+  const isFollower = !isFollowing && followerIds.some(id => id === user.id);
+  const [followUser] = useMutation(FOLLOW_USER);
+
+  function handleFollowUser() {
+    setIsFollowing(true);
+    const variables = {
+      userIdToFollow: user.id,
+      currentUserId
+    }
+    followUser({ variables });
+  }
+
+  const onUnfollowUser = React.useCallback(() => {
+    setShowUnfollowDialog(false);
+    setIsFollowing(false);
+  }, [])
 
   let followButton;
-  const isFollowing = true;
-  const isFollower = false;
+  // const isFollowing = true;
+  // const isFollower = false;
   if (isFollowing) {
     followButton = (
       <Button onClick={() => setShowUnfollowDialog(true)} variant="outlined" className={classes.button}>
@@ -79,13 +110,13 @@ const ProfileNameSection = ({ user, isOwner, handleOptionsMenuClick }) => {
     )
   } else if (isFollower) {
     followButton = (
-      <Button variant="contained" color="primary" className={classes.button}>
+      <Button onClick={handleFollowUser} variant="contained" color="primary" className={classes.button}>
         Follow Back
       </Button>
     )
   } else {
     followButton = (
-      <Button variant="contained" color="primary" className={classes.button}>
+      <Button onClick={handleFollowUser} variant="contained" color="primary" className={classes.button}>
         Follow
       </Button>
     )
@@ -142,13 +173,25 @@ const ProfileNameSection = ({ user, isOwner, handleOptionsMenuClick }) => {
           )}
         </section>
       </Hidden>
-      {showUnfollowDialog && <UnfollowDialog user={user} onClose={() => setShowUnfollowDialog(false)} />}
+      {showUnfollowDialog && <UnfollowDialog onUnfollowUser={onUnfollowUser} user={user} onClose={() => setShowUnfollowDialog(false)} />}
     </>
   )
 }
 
-const UnfollowDialog = ({ onClose, user }) => {
+const UnfollowDialog = ({ onUnfollowUser, onClose, user }) => {
   const classes = useProfilePageStyles();
+  const { currentUserId } = React.useContext(UserContext);
+  const [unfollowUser] = useMutation(UNFOLLOW_USER);
+
+  function handleUnfollowUser() {
+    const variables = {
+      userIdToUnfollow: user.id,
+      currentUserId
+    }
+    unfollowUser({ variables })
+    onUnfollowUser();
+  }
+
 
   return (
     <Dialog
@@ -174,7 +217,7 @@ const UnfollowDialog = ({ onClose, user }) => {
         Unfollow @{user.username}?
       </Typography>
       <Divider />
-      <Button onClickclassName={classes.unfollowButton}>
+      <Button onClick={handleUnfollowUser} className={classes.unfollowButton}>
         Unfollow
       </Button>
       <Divider />
@@ -198,7 +241,7 @@ const PostCountSection = ({ user }) => {
         {options.map(option => (
           <div key={option} className={classes.followingText}>
             <Typography className={classes.followingCount}>
-              {user[option].length}
+              {user[`${option}_aggregate`].aggregate.count}
             </Typography>
             <Hidden xsDown>
               <Typography>{option}</Typography>

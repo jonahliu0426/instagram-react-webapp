@@ -9,6 +9,18 @@ subscription me($userId: String) {
     username
     profile_image
     last_checked
+    followers {
+      user {
+        id
+        user_id
+      }
+    }
+    following {
+      user {
+        id
+        user_id
+      }
+    }
     notifications(order_by: {created_at: desc}){
       id
       type
