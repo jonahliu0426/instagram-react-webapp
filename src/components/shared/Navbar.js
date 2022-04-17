@@ -221,7 +221,7 @@ const Links = ({ path }) => {
             classes.profileActive : ""}>
           </div>
           <Avatar
-            src={authState.user.photoURL}
+            src={me.profile_image}
             className={classes.profileImage}
           />
         </Link>

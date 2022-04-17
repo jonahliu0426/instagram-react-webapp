@@ -140,7 +140,7 @@ const EditUserInfo = ({ user }) => {
   const [editUser] = useMutation(EDIT_USER);
   const [error, setError] = React.useState(DEFAULT_ERROR);
   const [open, setOpen] = React.useState(false);
-  const [media, setMedia] = React.useState(null);
+  // const [media, setMedia] = React.useState(null);
   const [profileImage, setProfileImage] = React.useState(user.profile_image);
   const [editUserAvatar] = useMutation(EDIT_USER_AVATAR)
   const inputRef = React.useRef();
