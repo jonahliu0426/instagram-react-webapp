@@ -15,6 +15,8 @@ import { UserContext } from "../../App";
 import AddPostDialog from "../post/AddPostDialog";
 import { isAfter } from "date-fns";
 import { create } from "domain";
+import { useMutation } from "@apollo/client";
+import { CHECK_NOTIFICATIONS } from "../../graphql/mutations";
 
 
 function Navbar({ minimalNavbar }) {
@@ -150,9 +152,17 @@ const Links = ({ path }) => {
   const [media, setMedia] = React.useState(null);
   const [showAddPostDialog, setShowAddPostDialog] = React.useState(false);
   const inputRef = React.useRef();
+  const [checkNotifications] = useMutation(CHECK_NOTIFICATIONS);
 
   const handleToggleList = () => {
     setShowList(prev => !prev);
+    if (showList) {
+      const variables = {
+        userId: currentUserId,
+        lastChecked: new Date().toISOString()
+      }
+      checkNotifications({ variables });
+    }
   }
 
   React.useEffect(() => {
