@@ -68,7 +68,7 @@ query getUserProfile($username: String!) {
         count
       }
     }
-    saved_posts {
+    saved_posts(order_by: {created_at: desc}) {
       post {
         id
         media
@@ -84,7 +84,7 @@ query getUserProfile($username: String!) {
         }
       }
     }
-    posts {
+    posts(order_by: {created_at: desc}) {
       id
       media
       likes_aggregate {
@@ -97,6 +97,76 @@ query getUserProfile($username: String!) {
           count
         }
       }
+    }
+  }
+}
+`
+
+export const SUGGEST_USERS = gql`
+query suggestUsers($limit: Int!, $followerIds: [uuid!]!, $createdAt: timestamptz!) {
+  users(limit: $limit, where: {_or: [
+    {id: {_in: $followerIds}}, 
+    {created_at: {_gt: $createdAt}}
+  ]}) {
+    id
+    username
+    name
+    profile_image
+  }
+}
+`
+
+// posts with the most likes and comments at the top, 
+// newest to the oldest where the posts are not from users we are following
+export const EXPLORE_POSTS = gql`
+query explorePosts($followingIds: [uuid!]!) {
+  posts(order_by: {created_at: desc, likes_aggregate: {count: desc}, comments_aggregate: {count: desc}}, where: {user_id: {_nin: $followingIds}}) {
+    id
+    media
+    likes_aggregate {
+      aggregate {
+        count
+      }
+    }
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+`
+
+export const EXPLORE_MORE_POSTS = gql`
+query getMorePostsFromUser($userId: uuid!, $postId: uuid!) {
+  posts(
+    limit: 6,
+    order_by: {created_at: desc, likes_aggregate: {count: desc}, comments_aggregate: {count: desc}},
+    where: {user_id: {_eq: $userId}, _not: {id: {_eq: $postId}}}
+  ){
+    id
+    media
+    likes_aggregate{
+      aggregate{
+        count
+      }
+    }
+    comments_aggregate{
+      aggregate{
+        count
+      }
+    }
+  }
+}
+`
+
+export const GET_POST = gql`
+query getPost($postId: uuid!) {
+  posts_by_pk(id: $postId) {
+    id
+    user {
+      id
+      username
     }
   }
 }

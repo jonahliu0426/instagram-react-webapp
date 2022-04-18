@@ -22,8 +22,11 @@ function App() {
   const { authState } = React.useContext(AuthContext);
   const isAuth = authState.status === "in";
   const userId = isAuth ? authState.user.uid : null;
+  console.log('userId', userId);
   const variables = { userId };
-  const { data, loading } = useSubscription(ME, { variables });
+  console.log('variables', variables);
+  const { data, loading } = useSubscription(ME, { variables, fetchPolicy: "no-cache" });
+
   const history = useHistory();
   const location = useLocation();
   const prevLocation = React.useRef(location);
@@ -32,13 +35,13 @@ function App() {
   console.log('auth', authState)
 
   React.useEffect(() => {
-    if (!history.action !== 'POP' && !modal) {
+    if (history.action !== 'POP' && !modal) {
       prevLocation.current = location;
     }
   }, [location, modal, history.action]);
 
   if (loading) return <LoadingScreen />
-
+  console.log('data', data);
   if (!isAuth) {
     return (
       <Switch>
@@ -49,27 +52,32 @@ function App() {
     );
   }
 
-  const isModalOpen = modal && prevLocation.current !== location;
-  const me = isAuth && data ? data.users[0] : null;
-  const currentUserId = me.id;
-  const followingIds = me.following.map(({ user }) => user.id)
-  const followerIds = me.followers.map(({ user }) => user.id);
+  if (data) {
+    console.log('data, ', data);
+    const isModalOpen = modal && prevLocation.current !== location;
+    const me = isAuth && data ? data.users[0] : null;
+    const currentUserId = me.id;
+    const followingIds = me.following.map(({ user }) => user.id)
+    const followerIds = me.followers.map(({ user }) => user.id);
+    return (
+      <UserContext.Provider value={{ me, currentUserId, followerIds, followingIds }}>
+        <Switch location={isModalOpen ? prevLocation.current : location}>
+          <Route exact path="/" component={FeedPage} />
+          <Route path="/explore" component={ExplorePage} />
+          <Route exact path="/:username" component={ProfilePage} />
+          <Route exact path="/p/:postId" component={PostPage} />
+          <Route path="/accounts/edit" component={EditProfilePage} />
+          <Route path="/accounts/login" component={LoginPage} />
+          <Route path="/accounts/emailsignup" component={SignUpPage} />
+          <Route path="*" component={NotFoundPage} />
+        </Switch>
+        {isModalOpen && <Route exact path="/p/:postId" component={PostModal} />}
+      </UserContext.Provider>
+    )
+  }
+  return <LoadingScreen />
 
-  return (
-    <UserContext.Provider value={{ me, currentUserId, followerIds, followingIds }}>
-      <Switch location={isModalOpen ? prevLocation.current : location}>
-        <Route exact path="/" component={FeedPage} />
-        <Route path="/explore" component={ExplorePage} />
-        <Route exact path="/:username" component={ProfilePage} />
-        <Route exact path="/p/:postId" component={PostPage} />
-        <Route path="/accounts/edit" component={EditProfilePage} />
-        <Route path="/accounts/login" component={LoginPage} />
-        <Route path="/accounts/emailsignup" component={SignUpPage} />
-        <Route path="*" component={NotFoundPage} />
-      </Switch>
-      {isModalOpen && <Route exact path="/p/:postId" component={PostModal} />}
-    </UserContext.Provider>
-  )
+
 }
 
 export default App;

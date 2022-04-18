@@ -6,13 +6,14 @@ import { Card, CardContent, Hidden, Button, Typography, Dialog, Zoom, Divider, D
 import ProfilePicture from "../components/shared/ProfilePicture"
 import { GearIcon } from "../icons";
 import FollowButton from "../components/shared/FollowButton";
-import { Link, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import ProfileTabs from "../components/profile/ProfileTabs";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { GET_USER_PROFILE } from "../graphql/queries";
 import LoadingScreen from "../components/shared/LoadingScreen";
 import { UserContext } from "../App";
 import { FOLLOW_USER, UNFOLLOW_USER } from "../graphql/mutations";
+import { AuthContext } from "../auth";
 
 
 function ProfilePage() {
@@ -21,7 +22,7 @@ function ProfilePage() {
   const classes = useProfilePageStyles();
   const [showOptionMenu, setShowOptionMenu] = React.useState(false);
   const variables = { username };
-  const { data, loading } = useQuery(GET_USER_PROFILE, { variables });
+  const { data, loading } = useQuery(GET_USER_PROFILE, { variables, fetchPolicy: "no-cache" });
 
   if (loading) return <LoadingScreen />
   const [user] = data.users
@@ -278,10 +279,20 @@ const NameBioSection = ({ user }) => {
 
 const OptionsMenu = ({ handleCloseMenu }) => {
   const classes = useProfilePageStyles();
+  const { signOut } = React.useContext(AuthContext)
   const [showLogOutMessage, setShowLogOutMessage] = React.useState(false);
+  const history = useHistory();
+  const client = useApolloClient();
 
-  const handleClickLogOut = () => {
-    setShowLogOutMessage(true)
+  const handleLogOutClick = () => {
+    setShowLogOutMessage(true);
+    setTimeout(async () => {
+      await client.clearStore();
+      signOut();
+      history.push("/");
+      // console.log('client', client);
+      // window.location.reload();
+    }, 2000);
   }
 
   return (
@@ -307,7 +318,7 @@ const OptionsMenu = ({ handleCloseMenu }) => {
           <OptionsItem text="Authorized Apps" />
           <OptionsItem text="Notification" />
           <OptionsItem text="Privacy and Security" />
-          <OptionsItem text="Log Out" onClick={handleClickLogOut} />
+          <OptionsItem text="Log Out" onClick={handleLogOutClick} />
           <OptionsItem text="Cancel" onClick={handleCloseMenu} />
         </>
       )}
