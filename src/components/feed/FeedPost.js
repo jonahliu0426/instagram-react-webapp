@@ -7,20 +7,25 @@ import { MoreIcon, CommentIcon, ShareIcon, UnlikeIcon, LikeIcon, SaveIcon, Remov
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import FollowSuggestions from "../shared/FollowSuggestions";
 import OptionDialog from "../shared/OptionsDialog";
+import { formatDateToNow } from "../../utils/formatDate";
+import Img from 'react-graceful-image';
+
 
 function FeedPost({ post, index }) {
   const classes = useFeedPostStyles();
   const [showCaption, setShowCaption] = React.useState(false);
-  const { id, media, likes, user, caption, comments } = post;
+  const { id, media, likes, user, caption, created_at, comments, likes_aggregate, saved_posts, location, comments_aggregate } = post;
   const showFollowingSuggestions = index === 1;
   const [showOptionDialog, setShowOptionDialog] = React.useState(false);
+  const likesCount = likes_aggregate.aggregate.count;
+  const commentsCount = comments_aggregate.aggregate.count;
 
   return (
     <>
       <article className={classes.article}>
         {/* Feed Post Header */}
         <div className={classes.postHeader}>
-          <UserCard user={user} />
+          <UserCard user={user} location={location} />
           <MoreIcon
             className={classes.MoreIcon}
             onClick={() => setShowOptionDialog(true)}
@@ -28,7 +33,7 @@ function FeedPost({ post, index }) {
         </div>
         {/* Feed Post Image */}
         <div>
-          <img src={media} alt="Post media" className={classes.image} />
+          <Img src={media} alt="Post media" className={classes.image} />
         </div>
         {/* Feed Post Button */}
         <div className={classes.postButtonsWrapper}>
@@ -42,7 +47,7 @@ function FeedPost({ post, index }) {
           </div>
           {/* Post Likes Count */}
           <Typography className={classes.likes} variant="subtitle2">
-            <span>{likes === 1 ? "1 like" : `${likes} likes`}</span>
+            <span>{likesCount === 1 ? "1 like" : `${likesCount} likes`}</span>
           </Typography>
           {/* Post Caption with Expand and Collapse option */}
           <div className={showCaption ? classes.expanded : classes.collapsed}>
@@ -90,7 +95,7 @@ function FeedPost({ post, index }) {
               variant="body2"
               component="div"
             >
-              View all {comments.length} comments
+              View all {commentsCount} comments
             </Typography>
           </Link>
           {comments.map(comment => (
@@ -106,7 +111,7 @@ function FeedPost({ post, index }) {
             </div>
           ))}
           <Typography color="textSecondary" className={classes.datePosted}>
-            5 DAYS AGO
+            {formatDateToNow(created_at)}
           </Typography>
         </div>
         <Hidden xsDown>
@@ -115,7 +120,7 @@ function FeedPost({ post, index }) {
         </Hidden>
       </article>
       {showFollowingSuggestions && <FollowSuggestions />}
-      {showOptionDialog && <OptionDialog onClose={() => setShowOptionDialog(false)} />}
+      {showOptionDialog && <OptionDialog authorId={user.id} postId={id} onClose={() => setShowOptionDialog(false)} />}
     </>
   )
 }

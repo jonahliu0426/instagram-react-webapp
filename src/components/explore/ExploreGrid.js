@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
+import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 import React from "react";
 import { UserContext } from "../../App";
 import { EXPLORE_POSTS } from "../../graphql/queries";
@@ -13,9 +14,11 @@ function ExploreGrid() {
   // const [loading, setLoading] = React.useState(true);
   const { followingIds, currentUserId } = React.useContext(UserContext);
   const variables = { followingIds: [...followingIds, currentUserId] }
+  console.log({ variables });
   const { data, loading, error } = useQuery(EXPLORE_POSTS, { variables });
   // const {  } = explorePosts()
-
+  console.log('data', data);
+  console.log('loading', loading);
   React.useEffect(() => {
     // const timeOut = setTimeout(() => setLoading(false), 1000);
     // return () => clearTimeout(timeOut);
