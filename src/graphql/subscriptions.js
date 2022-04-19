@@ -67,6 +67,11 @@ subscription getPost($postId: uuid!) {
       id
       user_id
     }
+    comments_aggregate {
+      aggregate {
+        count
+      }
+    }
     comments(order_by: {created_at: asc, user: {username: asc}}) {
       id
       created_at

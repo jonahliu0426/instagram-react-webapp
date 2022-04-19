@@ -1,4 +1,4 @@
-import { format, formatDistanceStrict, isThisYear } from 'date-fns'
+import { format, formatDistanceStrict, formatDistanceToNow, isThisYear } from 'date-fns'
 
 export function formatPostDate(date) {
     // MARCH 23 (if it's current year)
@@ -17,4 +17,8 @@ export function formatDateToNowShort(date) {
         .split(' ')
         .map((s, i) => i === 1 ? s[0] : s)
         .join('')
+}
+
+export function formatDateToNow(date) {
+    return formatDistanceToNow(new Date(date), { addSuffix: true }).toUpperCase();
 }

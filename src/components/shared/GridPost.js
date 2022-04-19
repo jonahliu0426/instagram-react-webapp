@@ -16,7 +16,7 @@ function GridPost({ post }) {
     })
   }
 
-  console.log({ post })
+  console.log('post', { post })
   const likesCount = post.likes_aggregate.aggregate.count;
   const commentsCount = post.comments_aggregate.aggregate.count;
 

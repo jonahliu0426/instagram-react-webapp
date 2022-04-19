@@ -120,7 +120,14 @@ query suggestUsers($limit: Int!, $followerIds: [uuid!]!, $createdAt: timestamptz
 // newest to the oldest where the posts are not from users we are following
 export const EXPLORE_POSTS = gql`
 query explorePosts($followingIds: [uuid!]!) {
-  posts(order_by: {created_at: desc, likes_aggregate: {count: desc}, comments_aggregate: {count: desc}}, where: {user_id: {_nin: $followingIds}}) {
+  posts(
+    order_by: {
+      created_at: desc, 
+      likes_aggregate: {count: desc}, 
+      comments_aggregate: {count: desc}
+    }
+    where: {user_id: {_nin: $followingIds}}
+    ) {
     id
     media
     likes_aggregate {
@@ -171,3 +178,51 @@ query getPost($postId: uuid!) {
   }
 }
 `
+
+export const GET_FEED = gql`
+  query getFeed($limit: Int!, $feedIds: [uuid!]!, $lastTimestamp: timestamptz) {
+    posts(
+      limit: $limit
+      where: { user_id: { _in: $feedIds }, created_at: { _lt: $lastTimestamp } }
+      order_by: { created_at: desc }
+    ) {
+      id
+      caption
+      created_at
+      media
+      location
+      user {
+        id
+        username
+        name
+        profile_image
+      }
+      likes_aggregate {
+        aggregate {
+          count
+        }
+      }
+      likes {
+        id
+        user_id
+      }
+      saved_posts {
+        id
+        user_id
+      }
+      comments_aggregate {
+        aggregate {
+          count
+        }
+      }
+      comments(order_by: { created_at: desc }, limit: 2) {
+        id
+        content
+        created_at
+        user {
+          username
+        }
+      }
+    }
+  }
+`;
