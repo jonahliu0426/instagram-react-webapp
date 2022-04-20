@@ -12,8 +12,8 @@ import GridPost from "../shared/GridPost"
 function ExploreGrid() {
   const classes = useExploreGridStyles();
   // const [loading, setLoading] = React.useState(true);
-  const { followingIds, currentUserId } = React.useContext(UserContext);
-  const variables = { followingIds: [...followingIds, currentUserId] }
+  const { feedIds } = React.useContext(UserContext);
+  const variables = { feedIds }
   console.log({ variables });
   const { data, loading, error } = useQuery(EXPLORE_POSTS, { variables });
   // const {  } = explorePosts()

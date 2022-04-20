@@ -48,7 +48,7 @@ function FeedPage() {
   // let loading = false;
 
   if (loading) return <LoadingScreen />
-
+  console.log('posts data', data);
   return (
     <Layout>
       <div className={classes.container}>

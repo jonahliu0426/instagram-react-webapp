@@ -34,7 +34,7 @@ mutation createPost($userId: uuid!, $media: String!, $location: String!, $captio
 export const LIKE_POST = gql`
 mutation likePost($postId: uuid!, $userId: uuid!, $profileId: uuid!) {
   insert_likes(objects: {post_id: $postId, user_id: $userId}) {
-    affected_rows
+    __typename
   }
   insert_notifications(objects: {post_id: $postId, profile_id: $profileId, type: "like", user_id: $userId}){
     affected_rows
@@ -72,15 +72,27 @@ mutation unsavePost($postId: uuid!, $userId: uuid!) {
 export const CREATE_COMMENT = gql`
 mutation createComment($postId: uuid!, $userId: uuid!, $content: String!) {
   insert_comments(objects: {post_id: $postId, user_id: $userId, content: $content}) {
-    affected_rows
+    returning {
+      id
+      created_at
+      post_id
+      user_id
+      content
+      user {
+        username
+      }
+    }
   }
 }
 `
 
 export const CHECK_NOTIFICATIONS = gql`
   mutation checkNotifications($userId: uuid!, $lastChecked: String!) {
-  update_users(where: {id: {_eq: $userId}}, _set: {last_checked: $lastChecked}) {
-    affected_rows
+  update_users(
+    where: {id: {_eq: $userId}}, 
+    _set: {last_checked: $lastChecked}
+    ) {
+      affected_rows
   }
 }
 `
