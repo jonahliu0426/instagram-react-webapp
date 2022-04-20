@@ -26,66 +26,69 @@ function Post({ postId }) {
 
   if (loading) return <PostSkeleton />;
 
-  const { id, media, likes, likes_aggregate, saved_posts, user_id, user, caption, comments, created_at, location } = data.posts_by_pk;
-  const likesCount = likes_aggregate.aggregate.count;
-  return (
-    <div className={classes.postContainer}>
-      <article className={classes.article}>
-        {/* Post Header */}
-        <div className={classes.postHeader}>
-          <UserCard user={user} location={location} avatarSize={32} />
-          <MoreIcon
-            className={classes.MoreIcon}
-            onClick={() => setShowOptionDialog(true)}
-          />
-        </div>
-        {/* Post Image */}
-        <div className={classes.postImage}>
-          <img src={media} alt="Post media" className={classes.image} style={{ "width": 500, "height": 500, margin: "auto" }} />
-        </div>
-        {/* Post Button */}
-        <div className={classes.postButtonsWrapper}>
-          <div className={classes.postButtons}>
-            <LikeButton likes={likes} postId={id} authorId={user.id} />
-            <Link to={`/p/${id}`}>
-              <CommentIcon />
-            </Link>
-            <ShareIcon />
-            <SaveButton savedPosts={saved_posts} postId={id} />
+  if (data) {
+    const { id, media, likes, likes_aggregate, saved_posts, user_id, user, caption, comments, created_at, location } = data.posts_by_pk;
+    const likesCount = likes_aggregate.aggregate.count;
+    return (
+      <div className={classes.postContainer}>
+        <article className={classes.article}>
+          {/* Post Header */}
+          <div className={classes.postHeader}>
+            <UserCard user={user} location={location} avatarSize={32} />
+            <MoreIcon
+              className={classes.MoreIcon}
+              onClick={() => setShowOptionDialog(true)}
+            />
           </div>
-          {/* Post Likes Count */}
-          <Typography className={classes.likes} variant="subtitle2">
-            <span>{likes === 1 ? "1 like" : `${likesCount} likes`}</span>
-          </Typography>
-          {/* Post Caption */}
-          <div style={{
-            overflowY: 'scroll',
-            padding: '16px 12px',
-            height: '100%'
-          }}>
-            <AuthorCaption user={user} createdAt={created_at} caption={caption} />
-            {comments.map(comment => (
-              <UserComment key={comment.id} comment={comment} />
-            ))}
+          {/* Post Image */}
+          <div className={classes.postImage}>
+            <img src={media} alt="Post media" className={classes.image} style={{ "width": 500, "height": 500, margin: "auto" }} />
           </div>
-
-          {/* Post Comment Area */}
-
-          <Typography color="textSecondary" className={classes.datePosted}>
-            {formatPostDate(created_at)}
-          </Typography>
-          <Hidden xsDown>
-            <div className={classes.comment}>
-              <Divider />
-              <Comment postId={postId} />
+          {/* Post Button */}
+          <div className={classes.postButtonsWrapper}>
+            <div className={classes.postButtons}>
+              <LikeButton likes={likes} postId={id} authorId={user.id} />
+              <Link to={`/p/${id}`}>
+                <CommentIcon />
+              </Link>
+              <ShareIcon />
+              <SaveButton savedPosts={saved_posts} postId={id} />
             </div>
-          </Hidden>
-        </div>
+            {/* Post Likes Count */}
+            <Typography className={classes.likes} variant="subtitle2">
+              <span>{likes === 1 ? "1 like" : `${likesCount} likes`}</span>
+            </Typography>
+            {/* Post Caption */}
+            <div style={{
+              overflowY: 'scroll',
+              padding: '16px 12px',
+              height: '100%'
+            }}>
+              <AuthorCaption user={user} createdAt={created_at} caption={caption} />
+              {comments.map(comment => (
+                <UserComment key={comment.id} comment={comment} />
+              ))}
+            </div>
 
-      </article>
-      {showOptionDialog && <OptionDialog postId={id} authorId={user.id} onClose={() => setShowOptionDialog(false)} />}
-    </div>
-  )
+            {/* Post Comment Area */}
+
+            <Typography color="textSecondary" className={classes.datePosted}>
+              {formatPostDate(created_at)}
+            </Typography>
+            <Hidden xsDown>
+              <div className={classes.comment}>
+                <Divider />
+                <Comment postId={postId} />
+              </div>
+            </Hidden>
+          </div>
+
+        </article>
+        {showOptionDialog && <OptionDialog postId={id} authorId={user.id} onClose={() => setShowOptionDialog(false)} />}
+      </div>
+    )
+  }
+  return <PostSkeleton />;
 }
 
 const LikeButton = ({ likes, postId, authorId }) => {

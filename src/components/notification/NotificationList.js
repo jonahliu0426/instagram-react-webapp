@@ -9,6 +9,7 @@ import { CHECK_NOTIFICATIONS } from "../../graphql/mutations";
 import { formatDateToNowShort } from "../../utils/formatDate";
 
 function NotificationList({ currentUserId, handleHideList, notifications }) {
+  console.log('notifications', notifications);
   const classes = useNotificationListStyles();
   const listContainerRef = React.useRef();
   useOutsideClick(listContainerRef, handleHideList);
@@ -53,8 +54,8 @@ function NotificationList({ currentUserId, handleHideList, notifications }) {
             </div>
             <div>
               {isLike && (
-                <Link to={`/p/${notification.post.id}`}>
-                  <Avatar src={notification.post.media} alt="post cover" />
+                <Link to={`/p/${notification.post?.id}`}>
+                  <Avatar src={notification.post?.media} alt="post cover" variant="square" />
                 </Link>
               )}
               {isFollow && <FollowButton id={notification.user.id} />}

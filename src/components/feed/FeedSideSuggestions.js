@@ -1,7 +1,6 @@
 import { Paper, Typography } from "@material-ui/core";
 import React from "react";
 import { useFeedSideSuggestionsStyles } from "../../styles";
-import { getDefaultUser } from '../../data';
 import FollowButton from '../shared/FollowButton';
 import UserCard from "../shared/UserCard";
 import { LoadingIcon } from "../../icons";

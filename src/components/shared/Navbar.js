@@ -4,7 +4,6 @@ import { useNavbarStyles, WhiteTooltip, RedTooltip } from "../../styles";
 import { Link, useHistory } from 'react-router-dom';
 import logo from '../../images/logo.png'
 import { AddIcon, ExploreActiveIcon, ExploreIcon, HomeActiveIcon, HomeIcon, LikeActiveIcon, LikeIcon, LoadingIcon } from "../../icons";
-// import { defaultCurrentUser, getDefaultUser } from "../../data";
 import NotificationTooltip from '../notification/NotificationTooltip';
 import NotificationList from "../notification/NotificationList";
 import { useNProgress } from "@tanem/react-nprogress";
@@ -79,7 +78,6 @@ const Search = ({ history }) => {
       setResults(data.users);
       setLoading(false);
     }
-    // setResults(Array.from({ length: 5 }, () => getDefaultUser()));
   }, [query, data, searchUsers]);
 
   const handleClearInput = () => {
@@ -140,29 +138,27 @@ const Search = ({ history }) => {
 
 const Links = ({ path }) => {
   const { me, currentUserId } = React.useContext(UserContext);
+  const lastChecked = me.last_checked;
   const newNotifications = me.notifications.filter(({ created_at }) =>
-    isAfter(new Date(created_at), new Date(me.last_checked))
+    isAfter(new Date(created_at), new Date(lastChecked))
   );
+  // 
+  const notificationsToShow = me.notifications.filter(({ created_at }) =>
+    isAfter(new Date(created_at), new Date(lastChecked).setTime(new Date(lastChecked).getTime() - (24 * 60 * 60 * 1000)))
+  );
+  // console.log(new Date(me.last_checked).setTime(new Date(me.last_checked).getTime() - (10 * 60 * 60 * 1000)))
+  // console.log('new notifications', notificationsToShow);
   const hasNotifications = newNotifications.length > 0;
-  console.log(newNotifications);
   const classes = useNavbarStyles();
   const [showList, setShowList] = React.useState(false);
   const [showTooltip, setShowTooltip] = React.useState(hasNotifications);
-  const { authState } = React.useContext(AuthContext);
   const [media, setMedia] = React.useState(null);
   const [showAddPostDialog, setShowAddPostDialog] = React.useState(false);
   const inputRef = React.useRef();
-  const [checkNotifications] = useMutation(CHECK_NOTIFICATIONS);
+  console.log(me);
 
   const handleToggleList = () => {
-    setShowList(prev => !prev);
-    if (showList) {
-      const variables = {
-        userId: currentUserId,
-        lastChecked: new Date().toISOString()
-      }
-      checkNotifications({ variables });
-    }
+    setShowList((prev) => !prev);
   }
 
   React.useEffect(() => {
@@ -195,7 +191,7 @@ const Links = ({ path }) => {
 
   return (
     <div className={classes.linksContainer}>
-      {showList && <NotificationList currentUserId={currentUserId} notifications={me.notifications} handleHideList={handleHideList} />}
+      {showList && <NotificationList currentUserId={currentUserId} notifications={notificationsToShow} handleHideList={handleHideList} />}
       <div className={classes.linksWrapper}>
         {showAddPostDialog && (
           <AddPostDialog media={media} handleClose={handleClose} />

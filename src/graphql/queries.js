@@ -119,14 +119,14 @@ query suggestUsers($limit: Int!, $followerIds: [uuid!]!, $createdAt: timestamptz
 // posts with the most likes and comments at the top, 
 // newest to the oldest where the posts are not from users we are following
 export const EXPLORE_POSTS = gql`
-query explorePosts($followingIds: [uuid!]!) {
+query explorePosts($feedIds: [uuid!]!) {
   posts(
     order_by: {
       created_at: desc, 
       likes_aggregate: {count: desc}, 
       comments_aggregate: {count: desc}
     }
-    where: {user_id: {_nin: $followingIds}}
+    where: {user_id: {_nin: $feedIds}}
     ) {
     id
     media
